@@ -34,12 +34,13 @@ const TimelineItem: React.FC<TimelineItemProps> = ({
   const yearRange = formatYearRange();
 
   return (
-    <div className="relative pl-8 pb-8 last:pb-0"> {/* Remove bottom padding from last item */}
-      {/* Timeline line (stop before the dot if it's the last item) */}
-      <div className="absolute left-0 top-4 h-[calc(100%-1rem)] w-0.5 bg-gray-200 dark:bg-gray-700"></div>
+    // Reduced base padding, adjusted sm breakpoint
+    <div className="relative pl-6 sm:pl-8 pb-8 last:pb-0"> 
+      {/* Timeline line - Adjust left position based on padding */}
+      <div className="absolute left-[-2px] sm:left-0 top-4 h-[calc(100%-1rem)] w-0.5 bg-gray-200 dark:bg-gray-700"></div>
       
-      {/* Timeline dot - adjust top position slightly */}
-      <div className={`absolute left-[-8px] top-1 h-4 w-4 rounded-full border-2 ${
+      {/* Timeline dot - Adjust left position based on padding */}
+      <div className={`absolute left-[-10px] sm:left-[-8px] top-1 h-4 w-4 rounded-full border-2 ${
         isActive 
           ? 'bg-blue-500 border-blue-600 dark:bg-blue-400 dark:border-blue-500' 
           : 'bg-gray-100 border-gray-300 dark:bg-gray-700 dark:border-gray-600'

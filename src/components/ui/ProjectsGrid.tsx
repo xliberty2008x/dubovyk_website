@@ -116,7 +116,8 @@ export default function ProjectsGrid() {
   return (
     <div className="py-8">
       {/* Title is usually provided by the page component */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"> 
+      {/* Adjusted gap for different screen sizes */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"> 
         {projects.map((project) => (
           <ProjectCard 
             key={project.id} 
