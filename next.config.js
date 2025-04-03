@@ -5,6 +5,7 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['sharp', 'onnxruntime-node'],
   },
+  output: 'standalone', // Add this line for Docker deployment
   images: {
     domains: ['avatars.githubusercontent.com', 'images.unsplash.com'],
   },
