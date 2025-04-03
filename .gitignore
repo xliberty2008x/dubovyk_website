@@ -1,0 +1,60 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Testing
+coverage
+
+# Next.js build output and cache
+/.next/
+/out/
+# Production build
+/build
+
+# Production
+/build
+
+# Environment variables
+.env*.local
+.env
+
+# Debug logs and dumps
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.log
+*.tmp
+*.temp
+# macOS files
+.DS_Store
+._*
+
+# Editor directories and files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Cache directories
+.cache
+
+# Deployment directories (keep if needed, but often configured elsewhere)
+#.vercel
+#.netlify
+
+# Cloudflare Pages directory
+.wrangler/
+
+# Docker files (keep if part of repo, comment out if generated locally)
+# .dockerignore
+# docker-compose.yml # Might want to commit this if used for development setup
+
+# Windows thumbnail cache
+Thumbs.db

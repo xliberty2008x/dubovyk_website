@@ -1,0 +1,38 @@
+{
+  "name": "dubovyk-website",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "mcp-server": "node src/mcp-server/express-bridge/index.js"
+  },
+  "dependencies": {
+    "@azure/openai": "^2.0.0",
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.49.4",
+    "axios": "^1.6.2",
+    "body-parser": "^1.20.3",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "next": "^14.1.0",
+    "node-fetch": "^3.3.2",
+    "pg": "^8.13.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.24",
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
+    "autoprefixer": "^10.4.15",
+    "eslint": "^8.48.0",
+    "eslint-config-next": "^14.0.0",
+    "postcss": "^8.4.29",
+    "tailwindcss": "^3.3.3"
+  }
+}

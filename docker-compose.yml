@@ -1,0 +1,46 @@
+# Docker Compose Configuration for Kyrylo Dubovyk's Personal Website
+
+version: '3.8'
+
+services:
+  # Next.js application
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4}
+      - ACTIVE_LLM_PROVIDER=${ACTIVE_LLM_PROVIDER:-openai}
+      - ALLOWED_CLI_COMMANDS=${ALLOWED_CLI_COMMANDS:-ls,pwd,echo,date,cat,grep,find,head,tail,wc,sort,uniq,curl}
+      - ALLOWED_FILE_PATHS=${ALLOWED_FILE_PATHS:-/tmp,/home/data,/public}
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Optional: Redis for caching (uncomment if needed)
+  # redis:
+  #   image: redis:alpine
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis-data:/data
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+
+# Optional: Volumes for persistent data (uncomment if needed)
+# volumes:
+#   redis-data:

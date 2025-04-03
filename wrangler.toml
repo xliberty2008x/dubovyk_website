@@ -1,0 +1,40 @@
+# Cloudflare Pages Configuration
+
+name = "kir-dubovyk-website"
+compatibility_date = "2023-10-30"
+
+# Build settings
+[build]
+  command = "cd website && npm run build"
+  output = "website/.next"
+
+# Environment variables
+[env]
+  NODE_VERSION = "18"
+
+# Routes
+[[routes]]
+  pattern = "/*"
+  script = "website/.next/server/pages/index.js"
+  zone_name = "example.com"
+
+# Headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' https://api.openai.com https://*.azure.com https://*.googleapis.com;"
+
+# Functions
+[functions]
+  directory = "functions"
+  node_compat = true
+
+# KV Namespaces
+[[kv_namespaces]]
+  binding = "KV_STORAGE"
+  id = "example-kv-namespace-id"
+  preview_id = "example-kv-namespace-preview-id"

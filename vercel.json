@@ -1,0 +1,27 @@
+# Deployment Configuration for Vercel
+
+This configuration file specifies the build settings for deploying the website to Vercel.
+
+```json
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "website/package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/website/$1"
+    }
+  ],
+  "env": {
+    "OPENAI_API_KEY": "@openai_api_key",
+    "OPENAI_MODEL": "gpt-4",
+    "ACTIVE_LLM_PROVIDER": "openai",
+    "ALLOWED_CLI_COMMANDS": "ls,pwd,echo,date,cat,grep,find,head,tail,wc,sort,uniq,curl",
+    "ALLOWED_FILE_PATHS": "/tmp,/home/data,/public"
+  }
+}
