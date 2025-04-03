@@ -290,43 +290,43 @@ const Navbar: React.FC = () => {
                           ? 'bg-blue-50 dark:bg-gray-800 border-blue-500 text-blue-700 dark:text-blue-400' 
                           : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-gray-200'
                       }`}
-                      onClick={() => setIsMenuOpen(false)}
+                       onClick={() => setIsMenuOpen(false)}
                     >
-                      Admin (Posts)
+                      Posts {/* Simplified */}
                     </Link>
                     {/* Mobile Admin Links */}
-                    <Link 
+                    <Link
                      href="/admin/manage-experience" 
                      className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-150 ${
                         pathname === '/admin/manage-experience' 
                           ? 'bg-blue-50 dark:bg-gray-800 border-blue-500 text-blue-700 dark:text-blue-400' 
                           : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-gray-200'
                       }`}
-                      onClick={() => setIsMenuOpen(false)}
+                       onClick={() => setIsMenuOpen(false)}
                     >
-                      Admin (Experience)
+                      Experience {/* Simplified */}
                     </Link>
-                     <Link 
+                     <Link
                      href="/admin/manage-skills" 
                      className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-150 ${
                         pathname === '/admin/manage-skills' 
                           ? 'bg-blue-50 dark:bg-gray-800 border-blue-500 text-blue-700 dark:text-blue-400' 
                           : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-gray-200'
                       }`}
-                      onClick={() => setIsMenuOpen(false)}
+                       onClick={() => setIsMenuOpen(false)}
                     >
-                      Admin (Skills)
+                      Skills {/* Simplified */}
                     </Link>
-                    <Link 
+                    <Link
                      href="/admin/manage-projects" 
                      className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-150 ${
                         pathname === '/admin/manage-projects' 
                           ? 'bg-blue-50 dark:bg-gray-800 border-blue-500 text-blue-700 dark:text-blue-400' 
                           : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-gray-200'
                       }`}
-                      onClick={() => setIsMenuOpen(false)}
+                       onClick={() => setIsMenuOpen(false)}
                     >
-                      Admin (Projects)
+                      Projects {/* Simplified */}
                     </Link>
                     {/* Added Link to Manage Profile (Mobile) */}
                     <Link
@@ -336,9 +336,9 @@ const Navbar: React.FC = () => {
                           ? 'bg-blue-50 dark:bg-gray-800 border-blue-500 text-blue-700 dark:text-blue-400'
                           : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-gray-200'
                       }`}
-                      onClick={() => setIsMenuOpen(false)}
+                       onClick={() => setIsMenuOpen(false)}
                     >
-                      Admin (Profile)
+                      Profile {/* Simplified */}
                     </Link>
 
                    <button
