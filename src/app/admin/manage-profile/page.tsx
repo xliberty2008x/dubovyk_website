@@ -9,7 +9,7 @@ import Footer from '@/components/layout/Footer';
 import Image from 'next/image';
 
 const BUCKET_NAME = 'dubovyk-assets'; // Your public bucket name
-const PROFILE_IMAGE_PATH = 'profile_image'; // Consistent filename
+const PROFILE_IMAGE_FOLDER = 'private'; // Use private folder for RLS policy
 
 const ManageProfilePage: React.FC = () => {
   const { user, loading: authLoading } = useAuth();
@@ -36,23 +36,51 @@ const ManageProfilePage: React.FC = () => {
     }
   }, [user]);
 
-  const fetchCurrentImage = () => {
-    // Construct the public URL adding a timestamp to bust cache
-    const { data } = supabase.storage
-      .from(BUCKET_NAME)
-      .getPublicUrl(`${PROFILE_IMAGE_PATH}?t=${new Date().getTime()}`);
-
-    if (data?.publicUrl) {
-      // Check if the URL is actually accessible
-      fetch(data.publicUrl, { method: 'HEAD' })
-        .then(res => {
-          if (res.ok) {
-            setCurrentImageUrl(data.publicUrl);
-          } else {
-             setCurrentImageUrl(null);
-          }
-        }).catch(() => setCurrentImageUrl(null));
-    } else {
+  const fetchCurrentImage = async () => {
+    if (!user) return;
+    
+    try {
+      // Construct the path with user ID
+      const filePath = `${PROFILE_IMAGE_FOLDER}/profile_image_${user.id}`;
+      console.log("Fetching image from path:", filePath);
+      
+      // First, check if the file exists
+      const { data: fileData, error: fileError } = await supabase.storage
+        .from(BUCKET_NAME)
+        .list(PROFILE_IMAGE_FOLDER, {
+          limit: 100,
+          offset: 0,
+          sortBy: { column: 'name', order: 'asc' },
+        });
+        
+      console.log("Files in folder:", fileData);
+      
+      if (fileError) {
+        console.error("Error listing files:", fileError);
+        setCurrentImageUrl(null);
+        return;
+      }
+      
+      // Construct the public URL adding a timestamp to bust cache
+      const timestamp = new Date().getTime();
+      const { data } = supabase.storage
+        .from(BUCKET_NAME)
+        .getPublicUrl(`${filePath}`);
+      
+      console.log("Generated public URL:", data?.publicUrl);
+      
+      // Set the URL directly without checking accessibility
+      if (data?.publicUrl) {
+        // Add timestamp as query parameter to bust cache
+        const urlWithTimestamp = `${data.publicUrl}?t=${timestamp}`;
+        console.log("Setting image URL with timestamp:", urlWithTimestamp);
+        setCurrentImageUrl(urlWithTimestamp);
+      } else {
+        console.log("No public URL generated");
+        setCurrentImageUrl(null);
+      }
+    } catch (error) {
+      console.error("Error in fetchCurrentImage:", error);
       setCurrentImageUrl(null);
     }
   };
@@ -93,21 +121,41 @@ const ManageProfilePage: React.FC = () => {
     setSuccessMessage(null);
 
     try {
+      // Get the current user's ID
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      
+      if (!currentUser || !currentUser.id) {
+        throw new Error("User authentication error");
+      }
+      
+      // Use the private folder and include user ID in the path
+      const filePath = `${PROFILE_IMAGE_FOLDER}/profile_image_${currentUser.id}`;
+      
+      console.log("Uploading to path:", filePath);
+      console.log("User ID:", currentUser.id);
+      console.log("File type:", selectedFile.type);
+      console.log("File size:", selectedFile.size);
+      
       const { error: uploadError } = await supabase.storage
         .from(BUCKET_NAME)
-        .upload(PROFILE_IMAGE_PATH, selectedFile, {
+        .upload(filePath, selectedFile, {
           cacheControl: '3600',
           upsert: true, // Overwrite existing file
         });
 
       if (uploadError) {
+        console.error("Upload error details:", uploadError);
         throw uploadError;
       }
 
       setSuccessMessage('Profile image updated successfully!');
       setSelectedFile(null);
       setPreviewUrl(null);
-      fetchCurrentImage(); // Refresh display
+      
+      // Add a small delay before fetching the image to ensure storage processing is complete
+      setTimeout(() => {
+        fetchCurrentImage(); // Refresh display
+      }, 1000);
 
     } catch (err: any) {
       console.error("Error uploading profile image:", err);
@@ -145,14 +193,19 @@ const ManageProfilePage: React.FC = () => {
             <div className="mb-4">
               <h3 className="text-lg font-medium mb-2">Current Image:</h3>
               {currentImageUrl ? (
-                <Image
-                  src={currentImageUrl}
-                  alt="Current profile image"
-                  width={150}
-                  height={150}
-                  className="rounded-full object-cover border-2 border-gray-300 dark:border-gray-600"
-                  unoptimized // Helps with cache busting via timestamp
-                />
+                <>
+                  <Image
+                    src={currentImageUrl}
+                    alt="Current profile image"
+                    width={150}
+                    height={150}
+                    className="rounded-full object-cover border-2 border-gray-300 dark:border-gray-600"
+                    unoptimized // Helps with cache busting via timestamp
+                  />
+                  <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                    Image URL: {currentImageUrl}
+                  </p>
+                </>
               ) : (
                 <p className="text-gray-500 dark:text-gray-400">No profile image uploaded yet.</p>
               )}

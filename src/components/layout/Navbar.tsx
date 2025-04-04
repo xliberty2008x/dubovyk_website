@@ -214,6 +214,17 @@ const Navbar: React.FC = () => {
                        >
                          Profile
                        </Link>
+                       <Link
+                         href="/admin/manage-api-keys"
+                         className={`block px-4 py-2 text-sm ${
+                           pathname === '/admin/manage-api-keys'
+                             ? 'bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400'
+                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                         }`}
+                         onClick={() => setIsAdminMenuOpen(false)}
+                       >
+                         API Keys
+                       </Link>
                      </div>
                    )}
                  </div>
@@ -417,6 +428,17 @@ const Navbar: React.FC = () => {
                              onClick={() => setIsMenuOpen(false)}
                           >
                             Profile
+                          </Link>
+                          <Link
+                           href="/admin/manage-api-keys"
+                           className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-150 ${
+                              pathname === '/admin/manage-api-keys'
+                                ? 'bg-blue-50 dark:bg-gray-800 border-blue-500 text-blue-700 dark:text-blue-400'
+                                : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-gray-200'
+                            }`}
+                             onClick={() => setIsMenuOpen(false)}
+                          >
+                            API Keys
                           </Link>
                        </div>
                      )}

@@ -62,3 +62,18 @@ export interface Project {
   url?: string | null;
   display_order?: number | null;
 }
+
+// Type for API Keys table
+export interface ApiKey {
+  id: string;
+  created_at: string;
+  user_id: string;
+  name: string;
+  // The actual key is sensitive and typically not fetched/displayed after creation
+  key?: string; // The actual API key - only available during creation
+  key_preview?: string; // e.g., "sk_...abcd"
+  scopes: string[];
+  expires_at?: string | null;
+  last_used_at?: string | null;
+  is_active: boolean;
+}
