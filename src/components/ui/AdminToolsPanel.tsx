@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AdminToolCard from '@/components/admin/AdminToolCard';
 import ToolForm from '@/components/admin/ToolForm';
-import { MCPTool } from '@/lib/mcp/server';
+import { MCPTool } from '@/lib/types';
 
 const AdminToolsPanel: React.FC = () => {
   const [tools, setTools] = useState<MCPTool[]>([]);
