@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LLMManager } from '@/lib/llm/providers';
+import { LLMManager } from './src/lib/llm/providers';
 
 interface LLMConfigPanelProps {
   initialConfig: {
