@@ -7,3 +7,11 @@ node_modules
 .github
 README.md
 .gitignore
+AdminToolCard.tsx
+AdminToolsPanel.tsx
+src/mcp-server
+src/mcp-test
+src/lib/mcp-client.ts
+src/components/ui/AdminToolsPanel.tsx
+src/components/ui/AdminToolCard.tsx
+src/components/admin
