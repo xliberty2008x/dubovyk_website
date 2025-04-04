@@ -19,6 +19,7 @@
     "body-parser": "^1.20.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "framer-motion": "^12.6.3",
     "next": "^14.1.0",
     "node-fetch": "^3.3.2",
     "pg": "^8.13.3",
