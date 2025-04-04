@@ -1,32 +1,29 @@
 "use client";
 
-import React, { useState, useEffect } from 'react'; // Added useState, useEffect
-import Image from 'next/image'; // Import Next.js Image component
-import { supabase } from '@/lib/supabaseClient'; // Import supabase client
+import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-
-const BUCKET_NAME = 'dubovyk-assets'; // Bucket name defined earlier
-const PROFILE_IMAGE_PATH = 'profile_image'; // File path defined earlier
+import { getProfileImageUrl } from '@/lib/profileUtils'; // Import the new utility function
 
 export default function HomePage() {
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch the public URL for the profile image
-    const { data } = supabase.storage
-      .from(BUCKET_NAME)
-      .getPublicUrl(`${PROFILE_IMAGE_PATH}?t=${new Date().getTime()}`); // Add timestamp for cache busting
+    // Use the new utility function to get the profile image URL
+    const fetchProfileImage = async () => {
+      try {
+        const imageUrl = await getProfileImageUrl();
+        if (imageUrl) {
+          console.log('Profile image URL:', imageUrl);
+          setProfileImageUrl(imageUrl);
+        }
+      } catch (error) {
+        console.error('Error fetching profile image:', error);
+      }
+    };
 
-    if (data?.publicUrl) {
-       // Basic check if URL might be valid before setting
-       fetch(data.publicUrl, { method: 'HEAD' })
-        .then(res => {
-          if (res.ok) {
-             setProfileImageUrl(data.publicUrl);
-          }
-        }).catch(() => { /* Ignore fetch errors, means image likely doesn't exist */ });
-    }
+    fetchProfileImage();
   }, []); // Fetch only on mount
 
   return (

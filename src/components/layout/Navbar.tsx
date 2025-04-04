@@ -1,20 +1,33 @@
 "use client";
 
-"use client";
-
-"use client";
-
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation'; // Import useRouter
-import { useAuth } from '@/app/providers/AuthProvider'; // Import useAuth
-import { supabase } from '@/lib/supabaseClient'; // Import supabase for logout
+import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from '@/app/providers/AuthProvider';
+import { supabase } from '@/lib/supabaseClient';
+import ProfileImage from '@/components/ui/ProfileImage'; // Import the ProfileImage component
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
   const pathname = usePathname(); 
   const { user, loading } = useAuth(); // Get user and loading state
   const router = useRouter(); // Get router for logout redirect
+  const adminMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close admin menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (adminMenuRef.current && !adminMenuRef.current.contains(event.target as Node)) {
+        setIsAdminMenuOpen(false);
+      }
+    }
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -32,7 +45,11 @@ const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
+            <div className="flex-shrink-0 flex items-center space-x-3">
+              {/* Add ProfileImage component */}
+              <div className="hidden sm:block">
+                <ProfileImage size={32} className="rounded-full object-cover border-2 border-blue-500" />
+              </div>
               <Link href="/" className="text-xl font-bold text-gray-800 dark:text-white">
                 Kyrylo Dubovyk
               </Link>
@@ -113,66 +130,100 @@ const Navbar: React.FC = () => {
                 </Link>
              )}
              {!loading && user && (
-               // Adjusted spacing (space-x-6) and removed the "Admin:" label
-               <div className="flex items-center space-x-6"> 
-                 <Link 
-                    href="/admin/manage-posts" 
-                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-150 ${
-                      pathname === '/admin/manage-posts' 
-                        ? 'border-blue-500 text-gray-900 dark:text-white' 
-                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-700 hover:text-gray-700 dark:hover:text-gray-300'
-                    }`}
-                  >
-                    Posts {/* Shortened Link Name */}
-                  </Link>
-                  <Link 
-                    href="/admin/manage-experience" 
-                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-150 ${
-                      pathname === '/admin/manage-experience' 
-                        ? 'border-blue-500 text-gray-900 dark:text-white' 
-                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-700 hover:text-gray-700 dark:hover:text-gray-300'
-                    }`}
-                  >
-                    Experience {/* Shortened Link Name */}
-                  </Link>
-                   <Link 
-                    href="/admin/manage-skills" 
-                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-150 ${
-                      pathname === '/admin/manage-skills' 
-                        ? 'border-blue-500 text-gray-900 dark:text-white' 
-                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-700 hover:text-gray-700 dark:hover:text-gray-300'
-                    }`}
-                  >
-                    Skills {/* Shortened Link Name */}
-                  </Link>
-                  <Link 
-                    href="/admin/manage-projects" 
-                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-150 ${
-                      pathname === '/admin/manage-projects' 
-                        ? 'border-blue-500 text-gray-900 dark:text-white' 
-                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-700 hover:text-gray-700 dark:hover:text-gray-300'
-                    }`}
-                  >
-                    Projects {/* Shortened Link Name */}
-                  </Link>
-                  {/* Added Link to Manage Profile */}
-                  <Link
-                    href="/admin/manage-profile"
-                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-150 ${
-                      pathname === '/admin/manage-profile'
-                        ? 'border-blue-500 text-gray-900 dark:text-white'
-                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-700 hover:text-gray-700 dark:hover:text-gray-300'
-                    }`}
-                  >
-                    Profile {/* Shortened Link Name */}
-                  </Link>
+               <div className="flex items-center space-x-6">
+                 {/* Admin Dropdown Menu */}
+                 <div className="relative" ref={adminMenuRef}>
+                   <button
+                     onClick={() => setIsAdminMenuOpen(!isAdminMenuOpen)}
+                     className={`inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md ${
+                       pathname.startsWith('/admin')
+                         ? 'bg-blue-600 text-white hover:bg-blue-700'
+                         : 'bg-gray-100 text-gray-700 dark:text-gray-300 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
+                     } transition-colors`}
+                   >
+                     Admin
+                     <svg
+                       className={`ml-1 h-4 w-4 transition-transform ${isAdminMenuOpen ? 'rotate-180' : ''}`}
+                       xmlns="http://www.w3.org/2000/svg"
+                       viewBox="0 0 20 20"
+                       fill="currentColor"
+                     >
+                       <path
+                         fillRule="evenodd"
+                         d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                         clipRule="evenodd"
+                       />
+                     </svg>
+                   </button>
+                   
+                   {/* Dropdown Menu */}
+                   {isAdminMenuOpen && (
+                     <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-20 border border-gray-200 dark:border-gray-700">
+                       <Link
+                         href="/admin/manage-posts"
+                         className={`block px-4 py-2 text-sm ${
+                           pathname === '/admin/manage-posts'
+                             ? 'bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400'
+                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                         }`}
+                         onClick={() => setIsAdminMenuOpen(false)}
+                       >
+                         Posts
+                       </Link>
+                       <Link
+                         href="/admin/manage-experience"
+                         className={`block px-4 py-2 text-sm ${
+                           pathname === '/admin/manage-experience'
+                             ? 'bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400'
+                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                         }`}
+                         onClick={() => setIsAdminMenuOpen(false)}
+                       >
+                         Experience
+                       </Link>
+                       <Link
+                         href="/admin/manage-skills"
+                         className={`block px-4 py-2 text-sm ${
+                           pathname === '/admin/manage-skills'
+                             ? 'bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400'
+                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                         }`}
+                         onClick={() => setIsAdminMenuOpen(false)}
+                       >
+                         Skills
+                       </Link>
+                       <Link
+                         href="/admin/manage-projects"
+                         className={`block px-4 py-2 text-sm ${
+                           pathname === '/admin/manage-projects'
+                             ? 'bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400'
+                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                         }`}
+                         onClick={() => setIsAdminMenuOpen(false)}
+                       >
+                         Projects
+                       </Link>
+                       <Link
+                         href="/admin/manage-profile"
+                         className={`block px-4 py-2 text-sm ${
+                           pathname === '/admin/manage-profile'
+                             ? 'bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400'
+                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                         }`}
+                         onClick={() => setIsAdminMenuOpen(false)}
+                       >
+                         Profile
+                       </Link>
+                     </div>
+                   )}
+                 </div>
 
-                  <button
-                    onClick={handleLogout}
-                    className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                  >
-                    Logout
-                  </button>
+                 <button
+                   onClick={handleLogout}
+                   className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                 >
+                   Logout
+                 </button>
                </div>
              )}
            </div>
@@ -201,6 +252,11 @@ const Navbar: React.FC = () => {
       {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="sm:hidden">
+          {/* Add profile image to mobile menu */}
+          <div className="flex items-center px-4 pt-4 pb-2">
+            <ProfileImage size={28} className="rounded-full object-cover border-2 border-blue-500 mr-3" />
+            <span className="font-medium text-gray-800 dark:text-white">Kyrylo Dubovyk</span>
+          </div>
           <div className="pt-2 pb-3 space-y-1">
              {/* Mobile Links with Active Styling */}
              <Link 
@@ -283,63 +339,88 @@ const Navbar: React.FC = () => {
               )}
                {!loading && user && (
                  <>
-                   <Link 
-                     href="/admin/manage-posts" 
-                     className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-150 ${
-                        pathname === '/admin/manage-posts' 
-                          ? 'bg-blue-50 dark:bg-gray-800 border-blue-500 text-blue-700 dark:text-blue-400' 
-                          : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-gray-200'
-                      }`}
-                       onClick={() => setIsMenuOpen(false)}
-                    >
-                      Posts {/* Simplified */}
-                    </Link>
-                    {/* Mobile Admin Links */}
-                    <Link
-                     href="/admin/manage-experience" 
-                     className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-150 ${
-                        pathname === '/admin/manage-experience' 
-                          ? 'bg-blue-50 dark:bg-gray-800 border-blue-500 text-blue-700 dark:text-blue-400' 
-                          : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-gray-200'
-                      }`}
-                       onClick={() => setIsMenuOpen(false)}
-                    >
-                      Experience {/* Simplified */}
-                    </Link>
-                     <Link
-                     href="/admin/manage-skills" 
-                     className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-150 ${
-                        pathname === '/admin/manage-skills' 
-                          ? 'bg-blue-50 dark:bg-gray-800 border-blue-500 text-blue-700 dark:text-blue-400' 
-                          : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-gray-200'
-                      }`}
-                       onClick={() => setIsMenuOpen(false)}
-                    >
-                      Skills {/* Simplified */}
-                    </Link>
-                    <Link
-                     href="/admin/manage-projects" 
-                     className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-150 ${
-                        pathname === '/admin/manage-projects' 
-                          ? 'bg-blue-50 dark:bg-gray-800 border-blue-500 text-blue-700 dark:text-blue-400' 
-                          : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-gray-200'
-                      }`}
-                       onClick={() => setIsMenuOpen(false)}
-                    >
-                      Projects {/* Simplified */}
-                    </Link>
-                    {/* Added Link to Manage Profile (Mobile) */}
-                    <Link
-                     href="/admin/manage-profile"
-                     className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-150 ${
-                        pathname === '/admin/manage-profile'
-                          ? 'bg-blue-50 dark:bg-gray-800 border-blue-500 text-blue-700 dark:text-blue-400'
-                          : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-gray-200'
-                      }`}
-                       onClick={() => setIsMenuOpen(false)}
-                    >
-                      Profile {/* Simplified */}
-                    </Link>
+                   {/* Mobile Admin Section with Accordion */}
+                   <div className="border-t border-gray-200 dark:border-gray-700 pt-2">
+                     <button
+                       onClick={() => setIsAdminMenuOpen(!isAdminMenuOpen)}
+                       className="flex justify-between w-full pl-3 pr-4 py-2 text-base font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-800 dark:hover:text-gray-200"
+                     >
+                       <span>Admin</span>
+                       <svg
+                         className={`h-5 w-5 transition-transform ${isAdminMenuOpen ? 'rotate-180' : ''}`}
+                         xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 20 20"
+                         fill="currentColor"
+                       >
+                         <path
+                           fillRule="evenodd"
+                           d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                           clipRule="evenodd"
+                         />
+                       </svg>
+                     </button>
+                     
+                     {/* Mobile Admin Links (Collapsible) */}
+                     {isAdminMenuOpen && (
+                       <div className="pl-4 border-l-2 border-gray-200 dark:border-gray-700 ml-3 mt-1">
+                         <Link 
+                           href="/admin/manage-posts" 
+                           className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-150 ${
+                              pathname === '/admin/manage-posts' 
+                                ? 'bg-blue-50 dark:bg-gray-800 border-blue-500 text-blue-700 dark:text-blue-400' 
+                                : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-gray-200'
+                            }`}
+                             onClick={() => setIsMenuOpen(false)}
+                          >
+                            Posts
+                          </Link>
+                          <Link
+                           href="/admin/manage-experience" 
+                           className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-150 ${
+                              pathname === '/admin/manage-experience' 
+                                ? 'bg-blue-50 dark:bg-gray-800 border-blue-500 text-blue-700 dark:text-blue-400' 
+                                : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-gray-200'
+                            }`}
+                             onClick={() => setIsMenuOpen(false)}
+                          >
+                            Experience
+                          </Link>
+                           <Link
+                           href="/admin/manage-skills" 
+                           className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-150 ${
+                              pathname === '/admin/manage-skills' 
+                                ? 'bg-blue-50 dark:bg-gray-800 border-blue-500 text-blue-700 dark:text-blue-400' 
+                                : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-gray-200'
+                            }`}
+                             onClick={() => setIsMenuOpen(false)}
+                          >
+                            Skills
+                          </Link>
+                          <Link
+                           href="/admin/manage-projects" 
+                           className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-150 ${
+                              pathname === '/admin/manage-projects' 
+                                ? 'bg-blue-50 dark:bg-gray-800 border-blue-500 text-blue-700 dark:text-blue-400' 
+                                : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-gray-200'
+                            }`}
+                             onClick={() => setIsMenuOpen(false)}
+                          >
+                            Projects
+                          </Link>
+                          <Link
+                           href="/admin/manage-profile"
+                           className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-150 ${
+                              pathname === '/admin/manage-profile'
+                                ? 'bg-blue-50 dark:bg-gray-800 border-blue-500 text-blue-700 dark:text-blue-400'
+                                : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-gray-200'
+                            }`}
+                             onClick={() => setIsMenuOpen(false)}
+                          >
+                            Profile
+                          </Link>
+                       </div>
+                     )}
+                   </div>
 
                    <button
                      onClick={() => { handleLogout(); setIsMenuOpen(false); }}
