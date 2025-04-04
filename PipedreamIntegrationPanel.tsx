@@ -1,6 +1,6 @@
 import React from 'react';
-import { MCPTool } from '@/lib/mcp/server';
-import { PipedreamClient } from '@/lib/pipedream/client';
+import { MCPTool } from './src/lib/types';
+import { PipedreamClient } from './src/lib/pipedream/client';
 
 interface PipedreamIntegrationPanelProps {
   apiKey: string;
